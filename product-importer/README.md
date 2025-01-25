@@ -1,112 +1,125 @@
-# Product Importer
-
-This Laravel application reads a CSV file, processes its content based on predefined rules, and imports it into a MySQL database. It supports both test mode (simulation) and actual imports.
-
-## Features
-
-- Reads product data from a `stock.csv` file.
-- Applies business rules for importing data:
-  - Items with a price < $5 and stock < 10 are skipped.
-  - Items priced > $1000 are skipped.
-  - Discontinued items are imported with the current date as the discontinued date.
-- Generates a report of processed, successful, and skipped items.
-- Includes unit and feature tests.
-
+Laravel Product Importer
+# Laravel Product Importer
+This Laravel application imports product data from a CSV file into a
+MySQL database while applying specific business rules. It includes
+features for testing and reporting skipped and successfully imported
+rows.
 ---
-
+## Features
+- Reads product data from a `stock.csv` file.
+- Applies import rules:
+ - Skip items priced < $5 and stock < 10.
+ - Skip items priced > $1000.
+ - Import discontinued items with the current date as the
+`discontinued_date`.
+- Reports processed, successful, and skipped rows.
+- Supports test mode (`--test`) to simulate the import process without
+affecting the database.
+- Fully tested with PHPUnit.
+---
 ## Prerequisites
-
-- PHP 8.0 or later
+Ensure the following are installed on your system:
+- PHP 8.0 or higher
 - Composer
 - MySQL
-- Laravel 10.x
-
+- Git
+- Node.js (optional, for frontend assets)
 ---
-
-## Setup Instructions
-
+## Setup and Installation
 ### 1. Clone the Repository
+Clone the repository to your local machine:
+```bash
+git clone https://github.com/your-username/product-importer.git
 cd product-importer
-2. Install Dependencies
-Install PHP dependencies:
-
-bash
-Copy
-Edit
+```
+### 2. Install Dependencies
+Install PHP dependencies using Composer:
+```bash
 composer install
-Install Node.js dependencies (optional, if applicable):
-
-bash
-Copy
-Edit
-npm install
-3. Configure Environment
-Copy the example environment file and configure database credentials:
-
-bash
-Copy
-Edit
+```
+```bash
+```
+### 3. Configure the Environment
+Copy the example `.env` file and configure your database credentials:
+```bash
 cp .env.example .env
-Edit .env:
-
-env
-Copy
-Edit
+```
+Edit the `.env` file:
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=product_importer
 DB_USERNAME=root
 DB_PASSWORD=your_password
-4. Set Up Database
-Run migrations to set up the database schema:
-
-bash
-Copy
-Edit
+```
+### 4. Set Up the Database
+Run migrations to create the required database tables:
+```bash
 php artisan migrate
-If required, import the make_database.sql file into your database:
-
-bash
-Copy
-Edit
+```
+(Optional) Import additional database schema or data from
+`make_database.sql`:
+```bash
 mysql -u root -p product_importer < make_database.sql
-5. Add the CSV File
-Place the stock.csv file in the storage/app/ directory:
-
-bash
-Copy
-Edit
+```
+### 5. Add the CSV File
+Ensure the `stock.csv` file is placed in the `storage/app/` directory:
+```bash
 mv /path/to/stock.csv storage/app/
-Usage
-Run the Import Command
-To process the CSV file and import data into the database, use:
-
-bash
-Copy
-Edit
+```
+---
+## Running the Application
+### Start the Development Server
+Run the Laravel development server:
+```bash
+php artisan serve
+```
+Access the application in your browser at:
+[http://127.0.0.1:8000](http://127.0.0.1:8000)
+### Import Products from CSV
+Run the command to import products:
+```bash
 php artisan stock:import
-Test Mode
-To simulate the import process without modifying the database:
-
-bash
-Copy
-Edit
+```
+### Simulate Import (Test Mode)
+Run the command in test mode to simulate the import process
+without saving to the database:
+```bash
 php artisan stock:import --test
-Testing
-This project includes unit and feature tests to validate functionality.
-
-Run Tests
-Run the test suite using:
-
-bash
-Copy
-Edit
+```
+---
+## Testing the Application
+This project includes both unit and feature tests to validate
+functionality.
+### Run Tests
+Run the test suite with:
+```bash
 php artisan test
-Example Output
-When running the stock:import command, you will see output similar to:
-
-yaml
-Copy
-Edit
+```
+---
+## Example Output
+Running the `stock:import` command provides output like:
+```
 Processed: 29, Successful: 25, Skipped: 4
+```
+---
+## Import Rules
+The application applies the following rules during the import:
+1. Skip rows where the price is < $5 **and** stock is < 10.
+2. Skip rows where the price is > $1000.
+3. Import discontinued items and set their `discontinued_date` to the
+current date.
+4. Log and skip rows with invalid or incomplete data.
+---
+## Troubleshooting
+### Common Issues
+- **CSV file not found**:
+ Ensure the `stock.csv` file exists in the `storage/app/` directory.
+- **Database connection issues**:
+ Verify that your `.env` file has the correct database credentials.
+### Debugging
+Add debug statements in `ImportStock.php` for additional visibility:
+```php
+$this->info("Processing row: " . json_encode($data));
+```
